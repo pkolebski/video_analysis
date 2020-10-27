@@ -11,13 +11,12 @@ class Video:
     def analyze(self):
         while self.capture.isOpened():
             _, frame = self.capture.read()
-            print(type(frame))
             detections = self.detector.detect(frame)
             for detect in detections:
                 frame = cv2.rectangle(
                     frame,
-                    detect[:2],
-                    detect[2:],
+                    (detect[1], detect[0]),
+                    (detect[3], detect[2]),
                     color=(255, 0, 0),
                     thickness=3,
                 )
