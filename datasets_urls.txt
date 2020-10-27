@@ -1,0 +1,3 @@
+https://www.jpjodoin.com/urbantracker/dataset/sherbrooke/sherbrooke_video.avi
+https://www.jpjodoin.com/urbantracker/dataset/rouen/rouen_video.avi
+https://www.jpjodoin.com/urbantracker/dataset/stmarc/stmarc_video.avi
