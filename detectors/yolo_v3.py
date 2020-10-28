@@ -7,8 +7,10 @@ from utils.download import download_url
 from detectors.detector import BaseDetector
 import cv2
 
-OBJECTS_MAP = {2: "Bicycle", 3: "Car", 4: "Motorcycle", 6: "Bus", 7: "Truck"}
+## coco
+OBJECTS_MAP = {1: "Bicycle", 2: "Car", 3: "Motorcycle", 5: "Bus", 7: "Truck"}
 PATH_MODEL = "pretrained_models"
+
 
 class Yolov3(BaseDetector):
     def __init__(self, threshold: float = 0.3,
@@ -31,7 +33,7 @@ class Yolov3(BaseDetector):
         img_shape = img.shape[:2]
         #0.00392 = 1/255
 
-        blob = cv2.dnn.blobFromImage(img, scalefactor=0.00392, size=(320, 320), mean=(0, 0, 0), swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(img, scalefactor=0.00392, size=(416, 416), mean=(0, 0, 0), swapRB=True, crop=False)
         self.model.setInput(blob)
         outs = self.model.forward(self.output_layers)
         detections = []
