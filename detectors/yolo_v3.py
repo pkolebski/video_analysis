@@ -18,9 +18,9 @@ class Yolov3(BaseDetector):
                  model_cfg: str = "https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3-tiny.cfg"):
         super().__init__(object_map=OBJECTS_MAP)
         self.threshold = threshold
-        download_url(model_cfg, PATH_MODEL+"/yolov3-tiny.cfg")
-        download_url(model_weights, PATH_MODEL+"/yolov3-tiny.weights")
-        self.model = cv2.dnn.readNet(PATH_MODEL+"/yolov3-tiny.weights", PATH_MODEL+"/yolov3-tiny.cfg")
+        download_url(model_cfg, PATH_MODEL+"/" + model_cfg.split('/')[-1])
+        download_url(model_weights, PATH_MODEL+"/"+model_weights.split('/')[-1])
+        self.model = cv2.dnn.readNet(PATH_MODEL+"/"+model_weights.split('/')[-1], PATH_MODEL + "/" + model_cfg.split('/')[-1])
         layer_names = self.model.getLayerNames()
         self.output_layers = [layer_names[i[0] - 1] for i in self.model.getUnconnectedOutLayers()]
 
@@ -31,8 +31,8 @@ class Yolov3(BaseDetector):
 
     def detect_with_desc(self, img: np.ndarray) -> List[Tuple[int, int, int, int, str, float]]:
         img_shape = img.shape[:2]
-        #0.00392 = 1/255
 
+        #0.00392 = 1/255
         blob = cv2.dnn.blobFromImage(img, scalefactor=0.00392, size=(416, 416), mean=(0, 0, 0), swapRB=True, crop=False)
         self.model.setInput(blob)
         outs = self.model.forward(self.output_layers)
@@ -40,8 +40,6 @@ class Yolov3(BaseDetector):
 
         for output in outs:
             for detect in output:
-
-                #   if detection_class in self.object_map.keys():
                 scores = detect[5:]
                 class_id = np.argmax(scores)
                 conf = scores[class_id]
