@@ -23,9 +23,9 @@ class Video:
                 )
 
                 frame = cv2.putText(frame,
-                                    detect[4],
+                                    str(detect[4]),
                                     (int(detect[0])+10, int(detect[1])+15),
-                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    font,
                                     0.5,
                                     (255, 0, 0),
                                     2)
