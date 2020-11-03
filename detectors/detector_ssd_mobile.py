@@ -2,6 +2,7 @@ from typing import List, Tuple
 import tensorflow_hub as hub
 import numpy as np
 import tensorflow as tf
+from detectors.detector import Detection
 
 from detectors.detector import BaseDetector
 import cv2
@@ -23,7 +24,7 @@ class DetectorSSDMobileNetv2(BaseDetector):
         img = np.expand_dims(img, axis=0)
         return img
 
-    def detect_with_desc(self, img: np.ndarray) -> List[Tuple[int, int, int, int, str, float]]:
+    def detect_with_desc(self, img: np.ndarray) -> List[Detection]:
         img_shape = img.shape[:2]
         img = self.preprocess(img)
         output = self.model(img)
@@ -38,8 +39,8 @@ class DetectorSSDMobileNetv2(BaseDetector):
                     positions = np.array(box * (img_shape + img_shape))
                     # y,x,y,x to x,y,x,y
                     positions = (positions[1], positions[0], positions[3], positions[2])
-                    box = positions + (vehicle_type, prob)
-                    detections.append(box)
+                    detection = Detection(positions, vehicle_type, prob)
+                    detections.append(detection)
                 else:
                     return detections
         return detections
