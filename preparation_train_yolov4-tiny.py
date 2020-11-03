@@ -54,17 +54,25 @@ def gen_txts():
 
 def gen_test_train_txts():
     f = open(DATASET_PATH+"train.txt", 'w')
-    for i in tqdm(range(100000)):
-        f.write(DATASET_PATH+"train/"+str(i).zfill(8)+".jpg")
-        if i!= 99999:
-            f.write("\n")
+    iter = 0
+    i = 0
+    while iter < 100000:
+        path = DATASET_PATH+"train/"+str(i).zfill(8)+".jpg"
+        if os.path.isfile(path):
+            f.write(path+"\n")
+            iter = iter+1
+        i = i + 1
     f.close()
+    iter = 0
     f = open(DATASET_PATH+"test.txt", 'w')
-    for i in tqdm(range(100000, 110000)):
-        f.write(DATASET_PATH+"train/" + str(i).zfill(8) + ".jpg")
-        if i!= 109999:
-            f.write("\n")
+    while iter < 10000:
+        path = DATASET_PATH + "train/" + str(i).zfill(8) + ".jpg"
+        if os.path.isfile(path):
+            f.write(path + "\n")
+            iter = iter + 1
+        i = i + 1
+    f.close()
 
 download_url("https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-tiny.conv.29", "yolo_v4_train_params/yolov4-tiny.conv.29")
-gen_txts()
+#gen_txts()
 gen_test_train_txts()

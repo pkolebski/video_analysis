@@ -7,22 +7,39 @@ from utils.download import download_url
 from detectors.detector import BaseDetector
 import cv2
 
-## coco
-OBJECTS_MAP = {1: "Bicycle", 2: "Car", 3: "Motorcycle", 5: "Bus", 7: "Truck"}
+
 PATH_MODEL = "pretrained_models"
+OBJECTS_MAP_COCO = {1: "Bicycle", 2: "Car", 3: "Motorcycle", 5: "Bus", 7: "Truck"}
+OBJECTS_MAP_MIO_TCD = {0: "Articulated truck",1: "Bicycle", 2: "Bus", 3: "Car", 4: "Motorcycle", 5:"Motorized vehicle",
+                       6: "Non-motorized vehicle",
+                       7: "Pedestrian",
+                       8: "Pickup truck",
+                       9: "Single unit truck",
+                       10: "Work van"}
 
 
 class Yolov3(BaseDetector):
-    def __init__(self, confThreshold: float = 0.5,
+    def __init__(self,
+                 objects_map: dict,
+                 confThreshold: float = 0.5,
                  nmsThreshold: float = 0.4,
-                 model_weights: str = "https://pjreddie.com/media/files/yolov3-tiny.weights",
-                 model_cfg: str = "https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3-tiny.cfg"):
-        super().__init__(object_map=OBJECTS_MAP)
+                 model_weights: str = "https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21385&authkey=AI8Kqsf-smehalo",
+                 model_cfg: str = "https://onedrive.live.com/embed?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21384&authkey=AJCNFbRpE_T06uA",
+                 model_name: str = None):
+        super().__init__(object_map=objects_map)
         self.confThreshold = confThreshold
         self.nmsThreshold = nmsThreshold
-        download_url(model_cfg, PATH_MODEL+"/" + model_cfg.split('/')[-1])
-        download_url(model_weights, PATH_MODEL+"/"+model_weights.split('/')[-1])
-        self.model = cv2.dnn.readNet(PATH_MODEL+"/"+model_weights.split('/')[-1], PATH_MODEL + "/" + model_cfg.split('/')[-1])
+        if model_name is None:
+            download_url(model_cfg, PATH_MODEL+"/" + model_cfg.split('/')[-1])
+            download_url(model_weights, PATH_MODEL+"/"+model_weights.split('/')[-1])
+            self.model = cv2.dnn.readNet(PATH_MODEL + "/" + model_weights.split('/')[-1],
+                                         PATH_MODEL + "/" + model_cfg.split('/')[-1])
+        else:
+            download_url(model_cfg, PATH_MODEL+"/" + model_name + ".cfg")
+            download_url(model_weights, PATH_MODEL+"/"+model_name + ".weights")
+            self.model = cv2.dnn.readNet(PATH_MODEL + "/" + model_name + ".weights",
+                                         PATH_MODEL + "/" + model_name + ".cfg")
+
         layer_names = self.model.getLayerNames()
         self.output_layers = [layer_names[i[0] - 1] for i in self.model.getUnconnectedOutLayers()]
 
