@@ -1,0 +1,72 @@
+
+from typing import List, Tuple
+import tensorflow_hub as hub
+import numpy as np
+import tensorflow as tf
+from utils.download import download_url
+from detectors.detector import BaseDetector
+import cv2
+
+## coco
+OBJECTS_MAP = {1: "Bicycle", 2: "Car", 3: "Motorcycle", 5: "Bus", 7: "Truck"}
+PATH_MODEL = "pretrained_models"
+
+
+class Yolov3(BaseDetector):
+    def __init__(self, confThreshold: float = 0.5,
+                 nmsThreshold: float = 0.4,
+                 model_weights: str = "https://pjreddie.com/media/files/yolov3-tiny.weights",
+                 model_cfg: str = "https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3-tiny.cfg"):
+        super().__init__(object_map=OBJECTS_MAP)
+        self.confThreshold = confThreshold
+        self.nmsThreshold = nmsThreshold
+        download_url(model_cfg, PATH_MODEL+"/" + model_cfg.split('/')[-1])
+        download_url(model_weights, PATH_MODEL+"/"+model_weights.split('/')[-1])
+        self.model = cv2.dnn.readNet(PATH_MODEL+"/"+model_weights.split('/')[-1], PATH_MODEL + "/" + model_cfg.split('/')[-1])
+        layer_names = self.model.getLayerNames()
+        self.output_layers = [layer_names[i[0] - 1] for i in self.model.getUnconnectedOutLayers()]
+
+    def preprocess(self, img: np.ndarray) -> np.ndarray:
+        img = cv2.resize(img, self.image_shape)
+        img = np.expand_dims(img, axis=0)
+        return img
+
+    def detect_with_desc(self, img: np.ndarray) -> List[Tuple[int, int, int, int, str, float]]:
+        img_shape = img.shape[:2]
+
+        #0.00392 = 1/255
+        blob = cv2.dnn.blobFromImage(img, scalefactor=0.00392, size=(416, 416), mean=(0, 0, 0), swapRB=True, crop=False)
+        self.model.setInput(blob)
+        outs = self.model.forward(self.output_layers)
+        detections = []
+        boxes = []
+        confidences = []
+        class_list_id = []
+
+        for output in outs:
+            for detect in output:
+                scores = detect[5:]
+                class_id = np.argmax(scores)
+                conf = scores[class_id]
+
+                if conf > self.confThreshold and class_id in self.object_map.keys():
+                    center_x = int(detect[0] * img_shape[1])
+                    center_y = int(detect[1] * img_shape[0])
+                    w = int(detect[2]*img_shape[1])
+                    h = int(detect[3] * img_shape[0])
+                    boxes.append([int(center_x-w/2), int(center_y-h/2), w, h])
+                    confidences.append(float(conf))
+                    class_list_id.append(class_id)
+
+        indices = cv2.dnn.NMSBoxes(boxes, confidences, self.confThreshold, self.nmsThreshold)
+
+        for i in indices:
+            j = i[0]
+            box = boxes[j]
+            detections.append((box[0],
+                               box[1],
+                               box[0]+box[2],
+                               box[1]+box[3],
+                               self.object_map[class_list_id[j]],
+                               confidences[j]))
+        return detections
