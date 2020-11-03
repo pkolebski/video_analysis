@@ -15,13 +15,18 @@ PATH_MODEL = "pretrained_models"
 class Yolov3(BaseDetector):
     def __init__(self, confThreshold: float = 0.5,
                  nmsThreshold: float = 0.4,
-                 model_weights: str = "https://pjreddie.com/media/files/yolov3-tiny.weights",
-                 model_cfg: str = "https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3-tiny.cfg"):
+                 model_weights: str = "https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21385&authkey=AI8Kqsf-smehalo",
+                 model_cfg: str = "https://onedrive.live.com/embed?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21384&authkey=AJCNFbRpE_T06uA",
+                 model_name: str = None):
         super().__init__(object_map=OBJECTS_MAP)
         self.confThreshold = confThreshold
         self.nmsThreshold = nmsThreshold
-        download_url(model_cfg, PATH_MODEL+"/" + model_cfg.split('/')[-1])
-        download_url(model_weights, PATH_MODEL+"/"+model_weights.split('/')[-1])
+        if model_name is None:
+            download_url(model_cfg, PATH_MODEL+"/" + model_cfg.split('/')[-1])
+            download_url(model_weights, PATH_MODEL+"/"+model_weights.split('/')[-1])
+        else:
+            download_url(model_cfg, PATH_MODEL+"/" + model_name + ".cfg")
+            download_url(model_weights, PATH_MODEL+"/"+model_name + ".weights")
         self.model = cv2.dnn.readNet(PATH_MODEL+"/"+model_weights.split('/')[-1], PATH_MODEL + "/" + model_cfg.split('/')[-1])
         layer_names = self.model.getLayerNames()
         self.output_layers = [layer_names[i[0] - 1] for i in self.model.getUnconnectedOutLayers()]
