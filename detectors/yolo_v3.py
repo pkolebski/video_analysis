@@ -1,13 +1,10 @@
-
-from typing import List, Tuple
-import tensorflow_hub as hub
+from typing import List
 import numpy as np
-import tensorflow as tf
 from utils.download import download_url
-from detectors.detector import BaseDetector
+from detectors.detector import BaseDetector, Detection
 import cv2
 
-## coco
+# coco
 OBJECTS_MAP = {1: "Bicycle", 2: "Car", 3: "Motorcycle", 5: "Bus", 7: "Truck"}
 PATH_MODEL = "pretrained_models"
 
@@ -31,7 +28,7 @@ class Yolov3(BaseDetector):
         img = np.expand_dims(img, axis=0)
         return img
 
-    def detect_with_desc(self, img: np.ndarray) -> List[Tuple[int, int, int, int, str, float]]:
+    def detect_with_desc(self, img: np.ndarray) -> List[Detection]:
         img_shape = img.shape[:2]
 
         #0.00392 = 1/255
@@ -63,10 +60,6 @@ class Yolov3(BaseDetector):
         for i in indices:
             j = i[0]
             box = boxes[j]
-            detections.append((box[0],
-                               box[1],
-                               box[0]+box[2],
-                               box[1]+box[3],
-                               self.object_map[class_list_id[j]],
-                               confidences[j]))
+            bb = (box[0], box[1], box[0] + box[2], box[1] + box[3])
+            detections.append(Detection(bb, self.object_map[class_list_id[j]], confidences[j]))
         return detections
