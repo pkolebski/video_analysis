@@ -15,15 +15,15 @@ class Video:
             for detect in detections:
                 frame = cv2.rectangle(
                     frame,
-                    detect[0:2],
-                    detect[2:4],
+                    detect.position[0:2],
+                    detect.position[2:4],
                     color=(250, 0, 0),
                     thickness=2
                 )
 
                 frame = cv2.putText(frame,
-                                    str(detect[4]),
-                                    (int(detect[0])+10, int(detect[1])+15),
+                                    str(detect.obj_type),
+                                    (int(detect.position[0]) + 10, int(detect.position[1]) + 15),
                                     font,
                                     0.5,
                                     (255, 0, 0),
