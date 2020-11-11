@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 from utils.download import download_url
 
-DATASET_PATH = 'data/MIO-TCD-Localization/'
+DATASET_PATH = '../data/MIO-TCD-Localization/'
 
 objects = {'articulated_truck':0,
            'bicycle':1,
@@ -31,7 +31,6 @@ def get_w_h(filename):
     shape = image.shape[:2]
     return shape[1], shape[0]
 
-#00091639
 
 def gen_txts():
     for file in tqdm(os.listdir(DATASET_PATH+"train")):
@@ -59,6 +58,7 @@ def gen_test_train_txts():
     while iter < 100000:
         path = DATASET_PATH+"train/"+str(i).zfill(8)+".jpg"
         if os.path.isfile(path):
+            path = os.path.abspath(path)
             f.write(path+"\n")
             iter = iter+1
         i = i + 1
@@ -73,6 +73,6 @@ def gen_test_train_txts():
         i = i + 1
     f.close()
 
-download_url("https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-tiny.conv.29", "yolo_v4_train_params/yolov4-tiny.conv.29")
-#gen_txts()
+#download_url("https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-tiny.conv.29", "yolo_v4_train_params/yolov4-tiny.conv.29")
+gen_txts()
 gen_test_train_txts()

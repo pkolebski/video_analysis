@@ -35,6 +35,6 @@ class Video:
             cv2.imshow('frame', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-            sys.stdout.write("\rfps {:.3}".format(1/(time.time()-start_time)))
+            sys.stdout.write("\rfps {:.5}".format(1/(time.time()-start_time)))
         self.capture.release()
         cv2.destroyAllWindows()

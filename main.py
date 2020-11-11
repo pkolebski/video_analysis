@@ -1,11 +1,19 @@
 from utils.video import Video
-from detectors.detector import ExampleDetector
-from detectors.detector_ssd_mobile import DetectorSSDMobileNetv2
-from detectors.yolo_v3 import Yolov3, OBJECTS_MAP_MIO_TCD
+import yaml
+import importlib
 
-detector = Yolov3(objects_map= OBJECTS_MAP_MIO_TCD,
-                  model_weights="https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21387&authkey=AP0GsENpG6xlKUw",
-                  model_cfg="https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21384&authkey=AJCNFbRpE_T06uA",
-                  model_name="Yolov4_tiny_mio_tcd_last")
-video = Video('data/sherbrooke_video.avi', detector)
+
+#import tensorflow as tf
+#config = tf.compat.v1.ConfigProto()
+#config.gpu_options.allow_growth = True
+#sess = tf.compat.v1.Session(config=config)
+
+with open('configs/Yolov4_tiny_mio_tcd.yaml') as file:
+  config = yaml.safe_load(file)
+
+module_name, class_name = config['model']['class'].rsplit(".", 1)
+class_detector = getattr(importlib.import_module(module_name), class_name)
+detector = class_detector(**config['model']['parameters'])
+
+video = Video('data/rouen_video.avi', detector)
 video.analyze()

@@ -1,5 +1,0 @@
-classes = 11
-train = data/MIO-TCD-Localization/train.txt
-valid = data/MIO-TCD-Localization/test.txt
-names = yolo_v4_train_params/obj.names
-backup = backup/

@@ -1,23 +1,21 @@
-from typing import List, Tuple
+from typing import List
 import tensorflow_hub as hub
 import numpy as np
-import tensorflow as tf
 from detectors.detector import Detection
-
 from detectors.detector import BaseDetector
 import cv2
 
-OBJECTS_MAP = {2: "Bicycle", 3: "Car", 4: "Motorcycle", 6: "Bus", 7: "Truck"}
-
 
 class DetectorSSDMobileNetv2(BaseDetector):
-    def __init__(self, threshold: float = 0.3, model_url: str = None, image_shape = (320, 320)):
-        super().__init__(object_map=OBJECTS_MAP)
+    def __init__(self, objects_map, threshold: float = 0.3, model_url: str = None, image_shape = (320, 320)):
+        super().__init__(object_map=objects_map)
         if model_url is None:
             self.model_url = "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/fpnlite_320x320/1"
+        else:
+            self.model_url = model_url
         self.model = hub.load(self.model_url)
         self.threshold = threshold
-        self.image_shape = image_shape
+        self.image_shape = tuple(image_shape)
 
     def preprocess(self, img: np.ndarray) -> np.ndarray:
         img = cv2.resize(img, self.image_shape)
