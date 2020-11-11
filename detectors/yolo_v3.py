@@ -37,6 +37,8 @@ class Yolov3(BaseDetector):
             self.model = cv2.dnn.readNet(PATH_MODEL + "/" + model_name + ".weights",
                                          PATH_MODEL + "/" + model_name + ".cfg")
 
+        self.model.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+        self.model.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
         layer_names = self.model.getLayerNames()
         self.output_layers = [layer_names[i[0] - 1] for i in self.model.getUnconnectedOutLayers()]
 
