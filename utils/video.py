@@ -1,17 +1,21 @@
 import cv2
 from detectors.detector import BaseDetector
+from trackers.iou import BaseTracker
 
 
 class Video:
-    def __init__(self, video_path: str, detector: BaseDetector):
+    def __init__(self, video_path: str, detector: BaseDetector, tracker: BaseTracker):
         self.capture = cv2.VideoCapture(video_path)
         self.detector = detector
+        self.tracker = tracker
 
     def analyze(self):
         font = cv2.FONT_HERSHEY_SIMPLEX
         while self.capture.isOpened():
             _, frame = self.capture.read()
             detections = self.detector.detect_with_desc(frame)
+            self.tracker.match_bbs(detections)
+            frame = self.tracker.plot_history(frame)
             for detect in detections:
                 frame = cv2.rectangle(
                     frame,
