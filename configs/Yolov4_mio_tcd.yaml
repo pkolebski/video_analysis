@@ -1,0 +1,23 @@
+model:
+  name: Yolov4 MIO-TCD
+  class: detectors.yolo.Yolo
+  desciption: Yolov4 uczone na zbiorze MIO TCD
+  parameters:
+    model_name: Yolov4_mio_tcd
+    confidence_threshold: 0.4
+    nms_Threshold: 0.4
+    model_weights_url: "https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21395&authkey=AMWagciR78nlMOE"
+    model_cfg_url: "https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21394&authkey=AAI-mVvIVWz3SKI"
+    frame_size: [320, 320]
+    objects_map: # MIO TCD dataset
+      0: "Articulated truck"
+      1: "Bicycle"
+      2: "Bus"
+      3: "Car"
+      4: "Motorcycle"
+      5: "Motorized vehicle"
+      6: "Non-motorized vehicle"
+      7: "Pedestrian"
+      8: "Pickup truck"
+      9: "Single unit truck"
+      10: "Work van"
