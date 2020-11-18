@@ -61,7 +61,7 @@ def calculate_iou(bb1: Detection, bb2: Detection) -> float:
     return iou
 
 
-def momentum_step(h1: Detection, h2: Detection, momentum: float = 1):
+def momentum_step(h1: Detection, h2: Detection, momentum: float = 0.9):
     a = [x1 - x2 for x1, x2 in zip(h2.get_center(), h1.get_center())]
     a = a[0], a[1], a[0], a[1]
     p = [x1 + x2 for x1, x2 in zip(h1.position, a)]
