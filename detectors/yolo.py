@@ -1,25 +1,32 @@
-from typing import List
+from typing import List, Tuple
 import numpy as np
 from utils.download import download_url
 from detectors.detector import BaseDetector, Detection
 import cv2
 
-# coco
-OBJECTS_MAP = {1: "Bicycle", 2: "Car", 3: "Motorcycle", 5: "Bus", 7: "Truck"}
 PATH_MODEL = "pretrained_models"
 
 
-class Yolov3(BaseDetector):
-    def __init__(self, confThreshold: float = 0.5,
-                 nmsThreshold: float = 0.4,
-                 model_weights: str = "https://pjreddie.com/media/files/yolov3-tiny.weights",
-                 model_cfg: str = "https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3-tiny.cfg"):
-        super().__init__(object_map=OBJECTS_MAP)
-        self.confThreshold = confThreshold
-        self.nmsThreshold = nmsThreshold
-        download_url(model_cfg, PATH_MODEL+"/" + model_cfg.split('/')[-1])
-        download_url(model_weights, PATH_MODEL+"/"+model_weights.split('/')[-1])
-        self.model = cv2.dnn.readNet(PATH_MODEL+"/"+model_weights.split('/')[-1], PATH_MODEL + "/" + model_cfg.split('/')[-1])
+class Yolo(BaseDetector):
+    def __init__(self,
+                 objects_map: dict,
+                 model_name: str,
+                 confidence_threshold: float = 0.5,
+                 nms_Threshold: float = 0.4,
+                 frame_size: Tuple[int, int] = [320, 320],
+                 model_weights_url: str = "https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21385&authkey=AI8Kqsf-smehalo",
+                 model_cfg_url: str = "https://onedrive.live.com/embed?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21384&authkey=AJCNFbRpE_T06uA"):
+        super().__init__(object_map=objects_map)
+        self.confidenceThreshold = confidence_threshold
+        self.nmsThreshold = nms_Threshold
+        self.frame_size = tuple(frame_size)
+        download_url(model_cfg_url, PATH_MODEL + "/" + model_name + ".cfg")
+        download_url(model_weights_url, PATH_MODEL + "/" + model_name + ".weights")
+        self.model = cv2.dnn.readNet(PATH_MODEL + "/" + model_name + ".weights",
+                                         PATH_MODEL + "/" + model_name + ".cfg")
+
+        self.model.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+        self.model.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
         layer_names = self.model.getLayerNames()
         self.output_layers = [layer_names[i[0] - 1] for i in self.model.getUnconnectedOutLayers()]
 
@@ -32,7 +39,7 @@ class Yolov3(BaseDetector):
         img_shape = img.shape[:2]
 
         #0.00392 = 1/255
-        blob = cv2.dnn.blobFromImage(img, scalefactor=0.00392, size=(416, 416), mean=(0, 0, 0), swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(img, scalefactor=0.00392, size=self.frame_size, mean=(0, 0, 0), swapRB=True, crop=False)
         self.model.setInput(blob)
         outs = self.model.forward(self.output_layers)
         detections = []
@@ -46,7 +53,7 @@ class Yolov3(BaseDetector):
                 class_id = np.argmax(scores)
                 conf = scores[class_id]
 
-                if conf > self.confThreshold and class_id in self.object_map.keys():
+                if conf > self.confidenceThreshold and class_id in self.object_map.keys():
                     center_x = int(detect[0] * img_shape[1])
                     center_y = int(detect[1] * img_shape[0])
                     w = int(detect[2]*img_shape[1])
@@ -55,7 +62,7 @@ class Yolov3(BaseDetector):
                     confidences.append(float(conf))
                     class_list_id.append(class_id)
 
-        indices = cv2.dnn.NMSBoxes(boxes, confidences, self.confThreshold, self.nmsThreshold)
+        indices = cv2.dnn.NMSBoxes(boxes, confidences, self.confidenceThreshold, self.nmsThreshold)
 
         for i in indices:
             j = i[0]

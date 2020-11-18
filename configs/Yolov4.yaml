@@ -1,0 +1,16 @@
+model:
+  name: Yolov4
+  class: detectors.yolo.Yolo
+  desciption: Yolov4 pretrained
+  parameters:
+    model_name: Yolov4
+    confidence_threshold: 0.6
+    model_weights_url: "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights"
+    model_cfg_url: "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4.cfg"
+    frame_size: [320, 320]
+    objects_map: # COCO dataset
+      1: "Bicycle"
+      2: "Car"
+      3: "Motorcycle"
+      5: "Bus"
+      7: "Truck"

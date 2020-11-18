@@ -1,0 +1,13 @@
+model:
+  name: SSD Mobile
+  class: detectors.detector_ssd_mobile.DetectorSSDMobileNetv2
+  desciption: SSD Mobile
+  parameters:
+    threshold: 0.3
+    image_shape: [640, 640]
+    objects_map:
+      2: "Bicycle"
+      3: "Car"
+      4: "Motorcycle"
+      6: "Bus"
+      7: "Truck"

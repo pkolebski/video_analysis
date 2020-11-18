@@ -1,5 +1,7 @@
 import cv2
 from detectors.detector import BaseDetector
+import time
+import sys
 
 
 class Video:
@@ -10,6 +12,7 @@ class Video:
     def analyze(self):
         font = cv2.FONT_HERSHEY_SIMPLEX
         while self.capture.isOpened():
+            start_time = time.time()
             _, frame = self.capture.read()
             detections = self.detector.detect_with_desc(frame)
             for detect in detections:
@@ -32,6 +35,6 @@ class Video:
             cv2.imshow('frame', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-
+            sys.stdout.write("\rfps {:.5}".format(1/(time.time()-start_time)))
         self.capture.release()
         cv2.destroyAllWindows()

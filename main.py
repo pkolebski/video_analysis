@@ -1,9 +1,19 @@
 from utils.video import Video
-from detectors.detector import ExampleDetector
-from detectors.detector_ssd_mobile import DetectorSSDMobileNetv2
-from detectors.yolo_v3 import Yolov3
+import yaml
+import importlib
 
-detector = Yolov3(model_weights="https://pjreddie.com/media/files/yolov3.weights",
-                  model_cfg="https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3.cfg")
-video = Video('data/stmarc_video.avi', detector)
+
+#import tensorflow as tf
+#config = tf.compat.v1.ConfigProto()
+#config.gpu_options.allow_growth = True
+#sess = tf.compat.v1.Session(config=config)
+
+with open('configs/Yolov4_tiny_mio_tcd.yaml') as file:
+  config = yaml.safe_load(file)
+
+module_name, class_name = config['model']['class'].rsplit(".", 1)
+class_detector = getattr(importlib.import_module(module_name), class_name)
+detector = class_detector(**config['model']['parameters'])
+
+video = Video('data/rouen_video.avi', detector)
 video.analyze()
