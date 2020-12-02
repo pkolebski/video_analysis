@@ -11,6 +11,11 @@ class Detection:
     obj_type: str
     probability: float
 
+    def get_center(self) -> Tuple[int, int]:
+        center_x = int((self.position[0] + self.position[2]) / 2)
+        center_y = int((self.position[1] + self.position[3]) / 2)
+        return center_x, center_y
+
 
 class BaseDetector(abc.ABC):
     def __init__(self, object_map: Dict = None):

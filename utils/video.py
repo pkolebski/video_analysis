@@ -1,13 +1,15 @@
 import cv2
 from detectors.detector import BaseDetector
+from trackers.iou import BaseTracker
 import time
 import sys
 
 
 class Video:
-    def __init__(self, video_path: str, detector: BaseDetector):
+    def __init__(self, video_path: str, detector: BaseDetector, tracker: BaseTracker):
         self.capture = cv2.VideoCapture(video_path)
         self.detector = detector
+        self.tracker = tracker
 
     def analyze(self):
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -15,13 +17,15 @@ class Video:
             start_time = time.time()
             _, frame = self.capture.read()
             detections = self.detector.detect_with_desc(frame)
+            self.tracker.match_bbs(detections)
+            frame = self.tracker.plot_history(frame)
             for detect in detections:
                 frame = cv2.rectangle(
                     frame,
-                    detect.position[0:2],
-                    detect.position[2:4],
+                    tuple([int(x) for x in detect.position[0:2]]),
+                    tuple([int(x) for x in detect.position[2:4]]),
                     color=(250, 0, 0),
-                    thickness=2
+                    thickness=2,
                 )
 
                 frame = cv2.putText(frame,
