@@ -1,18 +1,20 @@
-from utils.video import Video
+from utils.video import Video, save_imgs_as_video
 import yaml
 import importlib
 from trackers.iou import IouTracker
+from trackers.deepSORT import DeepSORT
 
 
-#import tensorflow as tf
-#config = tf.compat.v1.ConfigProto()
-#config.gpu_options.allow_growth = True
-#sess = tf.compat.v1.Session(config=config)
-with open('configs/Yolov4_tiny_mio_tcd.yaml') as file:
+with open('configs/Yolov4_mio_tcd.yaml') as file:
   config = yaml.safe_load(file)
 module_name, class_name = config['model']['class'].rsplit(".", 1)
 class_detector = getattr(importlib.import_module(module_name), class_name)
 detector = class_detector(**config['model']['parameters'])
-tracker = IouTracker()
-video = Video('data/sherbrooke_video.avi', detector, tracker)
+tracker = DeepSORT()
+model_name = config['model']['parameters']['model_name']
+tracker_name = type(tracker).__name__
+
+video = Video(video_path='data/custom_data/koronaRondo.MP4',
+              detector=detector,
+              tracker=tracker)
 video.analyze()

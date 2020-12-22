@@ -131,5 +131,7 @@ dmypy.json
 .idea/
 pretrained_models/
 data/
+tmp/
+output/
 yolo_train_MIO_TCD/darknet
 yolo_train_MIO_TCD/yolo_v4_train_params/yolov4-tiny.conv.29

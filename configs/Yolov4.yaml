@@ -4,7 +4,8 @@ model:
   desciption: Yolov4 pretrained
   parameters:
     model_name: Yolov4
-    confidence_threshold: 0.6
+    confidence_threshold: 0.55
+    nms_Threshold: 0.1
     model_weights_url: "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights"
     model_cfg_url: "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4.cfg"
     frame_size: [320, 320]

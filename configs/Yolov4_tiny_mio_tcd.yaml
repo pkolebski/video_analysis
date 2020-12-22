@@ -4,8 +4,8 @@ model:
   desciption: Yolov4 tiny uczone na zbiorze MIO TCD
   parameters:
     model_name: Yolov4_tiny_mio_tcd
-    confidence_threshold: 0.6
-    nms_Threshold: 0.6
+    confidence_threshold: 0.55
+    nms_Threshold: 0.1
     model_weights_url: "https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21387&authkey=AP0GsENpG6xlKUw"
     model_cfg_url: "https://onedrive.live.com/download?cid=1D0DF2C7923ADAA7&resid=1D0DF2C7923ADAA7%21384&authkey=AJCNFbRpE_T06uA"
     frame_size: [406, 406]
@@ -17,7 +17,6 @@ model:
       4: "Motorcycle"
       5: "Motorized vehicle"
       6: "Non-motorized vehicle"
-      7: "Pedestrian"
       8: "Pickup truck"
       9: "Single unit truck"
       10: "Work van"

@@ -3,8 +3,8 @@ model:
   class: detectors.detector_ssd_mobile.DetectorSSDMobileNetv2
   desciption: SSD Mobile
   parameters:
-    threshold: 0.3
-    image_shape: [640, 640]
+    threshold: 0.4
+    image_shape: [320, 320]
     objects_map:
       2: "Bicycle"
       3: "Car"

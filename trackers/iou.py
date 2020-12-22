@@ -14,7 +14,7 @@ class IouTracker(BaseTracker):
         self.min_track_threshold: float = min_track_threshold
         self.max_frames_track: float = max_frames_track
 
-    def match_bbs(self, bbs: List[Detection]) -> None:
+    def match_bbs(self, bbs: List[Detection], frame=None) -> None:
         for i in range(len(self.active_tracked)):
             self.active_tracked[i][1] = False
         active_tracked = self.active_tracked[:]
