@@ -3,6 +3,7 @@ from typing import List, Tuple
 
 import numpy as np
 import cv2
+from scipy.ndimage import gaussian_filter1d
 
 from detectors.detector import Detection
 
