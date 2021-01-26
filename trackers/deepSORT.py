@@ -52,6 +52,7 @@ class DeepSORT(BaseTracker):
                  model_filename = PATH_MODEL+"/model640.pt"):
         # super(DeepSORT, self).__init__()
         self.active_tracked = dict()
+        self.inactive_tracked = dict()
         max_cosine_distance = 0.3
         nn_budget = None
         x ="model640.pt"
@@ -204,4 +205,5 @@ class DeepSORT(BaseTracker):
         # for tracks_id in self.active_tracked.keys():
         #    if tracks_id not in tracked_ids:
         #        self.active_tracked[tracks_id][2] = False
+        self.inactive_tracked = {k: v for k, v in self.active_tracked.items() if not v[1]}
         self.active_tracked = {k: v for k, v in self.active_tracked.items() if v[1]}

@@ -21,6 +21,7 @@ class Video:
 
     def analyze(self):
         font = cv2.FONT_HERSHEY_SIMPLEX
+        heatmap = None
         frame_id = 0
         frames_fps = []
         while self.capture.isOpened():
@@ -28,11 +29,15 @@ class Video:
             _, frame = self.capture.read()
             if frame is None:
                 break
+            if heatmap is None:
+                heatmap = np.zeros_like(frame)
             detections = self.detector.detect_with_desc(frame)
             if len(detections)>0:
                 if self.tracker is not None:
                     self.tracker.match_bbs(detections, frame)
                     frame = self.tracker.plot_history(frame)
+                    self.tracker.plot_history(heatmap, heatmap=True)
+
                 for detect in detections:
                     frame = cv2.rectangle(
                         frame,
@@ -60,6 +65,7 @@ class Video:
                                 scale_percent=100)
             else:
                 cv2.imshow('frame', frame)
+                cv2.imshow('heatmap', heatmap)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
             frame_id = frame_id+1
@@ -70,6 +76,7 @@ class Video:
             f.write(s1)
             f.close()
 
+        cv2.imwrite("map2.png", heatmap)
         self.capture.release()
         cv2.destroyAllWindows()
 

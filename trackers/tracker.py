@@ -15,19 +15,63 @@ class BaseTracker(abc.ABC):
     def match_bbs(self, bbs: List[Detection], frame=None) -> None:
         pass
 
-    def plot_history(self, frame: np.ndarray):
+    def plot_history(self, frame: np.ndarray, heatmap: bool = False):
+        if heatmap:
+            for key, val in self.inactive_tracked.items():
+                np.random.seed(key)
+                color = (list(np.random.choice(range(256), size=3)))
+                color = [int(color[0]), int(color[1]), int(color[2])]
+                last_history = [d.get_center() for d in val[2][:]]
+
+                x, y = zip(*last_history)
+                t = np.linspace(0, 1, len(x))
+                t2 = np.linspace(0, 1, 100)
+
+                x2 = np.interp(t2, t, x)
+                y2 = np.interp(t2, t, y)
+                sigma = 10
+                x3 = gaussian_filter1d(x2, sigma)
+                y3 = gaussian_filter1d(y2, sigma)
+
+                x4 = np.interp(t, t2, x3)
+                y4 = np.interp(t, t2, y3)
+
+                for i, (l_x, l_y) in enumerate(zip(x4, y4)):
+                    if i > 0:
+                        cv2.line(
+                            frame,
+                            (int(x4[i - 1]), int(y4[i - 1])),
+                            (int(l_x), int(l_y)),
+                            color,
+                            thickness=2
+                        )
+            return
         if type(self.active_tracked) is dict:
             for key, val in self.active_tracked.items():
                 np.random.seed(key)
                 color = (list(np.random.choice(range(256), size=3)))
                 color = [int(color[0]), int(color[1]), int(color[2])]
-                last_history = val[2][:]
-                for i, det in enumerate(last_history):
+                last_history = [d.get_center() for d in val[2][:]]
+
+                x, y = zip(*last_history)
+                t = np.linspace(0, 1, len(x))
+                t2 = np.linspace(0, 1, 100)
+
+                x2 = np.interp(t2, t, x)
+                y2 = np.interp(t2, t, y)
+                sigma = 10
+                x3 = gaussian_filter1d(x2, sigma)
+                y3 = gaussian_filter1d(y2, sigma)
+
+                x4 = np.interp(t, t2, x3)
+                y4 = np.interp(t, t2, y3)
+
+                for i, (l_x, l_y) in enumerate(zip(x4, y4)):
                     if i > 0:
                         cv2.line(
                             frame,
-                            last_history[i - 1].get_center(),
-                            last_history[i].get_center(),
+                            (int(x4[i - 1]), int(y4[i - 1])),
+                            (int(l_x), int(l_y)),
                             color,
                             thickness=2
                         )
