@@ -5,6 +5,7 @@ import time
 import sys
 import os
 import numpy as np
+from scipy.ndimage import gaussian_filter1d
 
 IMAGE_SUFFIX = ".jpg"
 
@@ -36,7 +37,7 @@ class Video:
                 if self.tracker is not None:
                     self.tracker.match_bbs(detections, frame)
                     frame = self.tracker.plot_history(frame)
-                    self.tracker.plot_history(heatmap, heatmap=True)
+                    self.tracker.plot_history(heatmap, heatmap=False)
 
                 for detect in detections:
                     frame = cv2.rectangle(
@@ -76,7 +77,7 @@ class Video:
             f.write(s1)
             f.close()
 
-        cv2.imwrite("map2.png", heatmap)
+        # cv2.imwrite("map2.png", heatmap)
         self.capture.release()
         cv2.destroyAllWindows()
 

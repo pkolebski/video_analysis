@@ -60,8 +60,7 @@ class DeepSORT(BaseTracker):
         #    self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
 
         download_url(model_url, model_filename)
-        self.encoder = torch.load(model_filename)
-        self.encoder = self.encoder.cuda()
+        self.encoder = torch.load(model_filename, map_location=torch.device("cpu"))
         self.encoder = self.encoder.eval()
         metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)
         self.tracker = Tracker(metric, max_age=30)
@@ -70,7 +69,7 @@ class DeepSORT(BaseTracker):
             torchvision.transforms.ToPILImage(), \
             torchvision.transforms.Resize((128, 128)), \
             torchvision.transforms.ToTensor()])
-        self.gaussian_mask = get_gaussian_mask().cuda()
+        self.gaussian_mask = get_gaussian_mask()
 
     def pre_process(self, frame, detections):
 
@@ -145,7 +144,7 @@ class DeepSORT(BaseTracker):
         # print(crop.shape,[xmin,ymin,xmax,ymax],frame.shape)
 
         crop = self.transforms(crop)
-        crop = crop.cuda()
+        crop = crop
 
         gaussian_mask = self.gaussian_mask
 
@@ -169,7 +168,7 @@ class DeepSORT(BaseTracker):
         ##(x, y, width, height)
         names = np.array([detection.obj_type for detection in bbs])
         scores = np.array([detection.probability for detection in bbs])
-        processed_crops = self.pre_process(frame, boxes).cuda()
+        processed_crops = self.pre_process(frame, boxes)
         processed_crops = self.gaussian_mask * processed_crops
         # features = np.array(self.encoder(frame, boxes))
         features = self.encoder.forward_once(processed_crops)

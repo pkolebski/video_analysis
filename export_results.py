@@ -9,12 +9,20 @@ import os
 TMP_FOLDER = "tmp"
 EXPORT_FOLDER = "output"
 configs = ['configs/Yolov4_tiny_mio_tcd.yaml']#,
-           #'configs/Yolov4.yaml',
-configs = ['configs/Yolov4_mio_tcd.yaml']
+configs = ['configs/Yolov4.yaml']
+# configs = ['configs/SSD_mobile.yaml']
 
-video_paths = ['data/1280x720.m4v', 'data/custom_data/koronaRondo.MP4']
+video_paths = [
+    'data/koronaRondo.MP4',
+    'data/1280x720.m4v',
+    'data/rouen_video.avi',
+    'data/stmarc_video.avi',
+    'data/koronaWidokzGory.MP4',
+    'data/sherbrooke_video.avi',
+    'data/janaPawlaPoczatekRuchomy.MP4',
+    'data/janaPawlaSokolnicza.MP4']
 
-trackers = [DeepSORT]
+trackers = [IouTracker, DeepSORT]
 
 for path in video_paths+configs:
     if not os.path.exists(path):
